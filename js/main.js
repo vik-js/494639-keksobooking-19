@@ -61,30 +61,31 @@ var createDataMoke = function () {
     });
   }
   return data;
-
 };
 
-var data = createDataMoke();
+createDataMoke();
 
 var pinElement = document.querySelector('.map__pins'); // находим класс в котором будут выводится точки на карте
-var pinTamplate = document.querySelector('#pin').content; // находим id шаблона в верстке и получаем его содержимое
-
-// заполняем аватарку
-var renderAvatar = function () {
-  var iconWidth = 50;
-  var iconHeight = 70;
-  var pinBtnTamplate = pinTamplate.querySelector('button').cloneNode(true); // клонируем весь шаблон button
-  pinTamplate.querySelector('.map__pin').style = 'left: ' + (data[i].location.x + iconWidth / 2) + 'px; top: ' + (data[i].location.y - iconHeight) + 'px;'; // в шаблоне button находим атрибут style и задаем новое значение
-  pinBtnTamplate.querySelector('img').src = data[i].author.avatar; // находим изображение аватарки и задаем значение атрибуту src
-  pinBtnTamplate.querySelector('img').alt = data[i].offer.title; // находим изображения аватарки и задаем значение атрибуду alt
-  return pinBtnTamplate;
-};
+var pinTemplate = document.querySelector('#pin').content; // находим id шаблона в верстке и получаем его содержимое
 
 var fragment = document.createDocumentFragment(); // создаем пустой фрагмент
 
-for (var i = 0; i < data.length; i++) {
-  fragment.appendChild(renderAvatar(data[i])); // добавляем в фрагмент аватарки
-  pinElement.appendChild(fragment); // выводим фрагмент в верстку
-}
+var renderAvatars = function (data) {
+  for (var i = 0; i < data.length; i++) {
+    // заполняем аватарку
+    var renderAvatar = function () {
+      var iconWidth = 50;
+      var iconHeight = 70;
+      var pinBtnTemplate = pinTemplate.querySelector('button').cloneNode(true); // клонируем весь шаблон button
+      pinTemplate.querySelector('.map__pin').style = 'left: ' + (data[i].location.x + iconWidth / 2) + 'px; top: ' + (data[i].location.y + iconHeight) + 'px;'; // в шаблоне button находим атрибут style и задаем новое значение
+      pinBtnTemplate.querySelector('img').src = data[i].author.avatar; // находим изображение аватарки и задаем значение атрибуту src
+      pinBtnTemplate.querySelector('img').alt = data[i].offer.title; // находим изображения аватарки и задаем значение атрибуду alt
+      return pinBtnTemplate;
+    };
 
+    fragment.appendChild(renderAvatar(data[i])); // добавляем в фрагмент аватарки
+    pinElement.appendChild(fragment); // выводим фрагмент в верстку
+  }
+};
 
+renderAvatars(createDataMoke());
