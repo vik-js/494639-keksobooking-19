@@ -63,8 +63,6 @@ var createDataMoke = function () {
   return data;
 };
 
-createDataMoke();
-
 var pinElement = document.querySelector('.map__pins'); // находим класс в котором будут выводится точки на карте
 var pinTemplate = document.querySelector('#pin').content; // находим id шаблона в верстке и получаем его содержимое
 
