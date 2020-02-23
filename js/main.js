@@ -93,30 +93,25 @@ var cardTemplate = document.querySelector('#card').content; // находим id
 var renderCards = function (data) {
   // for (var i = 0; i < data.length; i++) { // вывод всех объявлений, пусть тут будет
   var renderCard = function () {
-    // вывод элемента массива по его индексу
-    var extractArrayElements = function (array, elements) {
-      for (var i = 0; i < array.length; i++) {
-        if (i === elements) {
-          var element = array[i];
-        }
-      }
-      return element;
-    };
+
     var cardElementTemplate = cardTemplate.querySelector('article').cloneNode(true); // клонируем весь шаблон article
     // заполняем объявление
     cardElementTemplate.querySelector('.popup__avatar').src = data[0].author.avatar; // аватарка
     cardElementTemplate.querySelector('.popup__title').textContent = data[0].offer.title; // заголовок
-    cardElementTemplate.querySelector('.popup__text--address').textContent = data[0].offer.address; // адрес
-    cardElementTemplate.querySelector('.popup__text--price').textContent = data[0].offer.price + '₽/ночь'; // цена
-    cardElementTemplate.querySelector('.popup__type').textContent = extractArrayElements(TYPE, data[0].offer.type); // тип жилья
-    cardElementTemplate.querySelector('.popup__text--capacity').textContent = data[0].offer.rooms + ' комнаты для ' + data[0].offer.guests + ' гостей'; // количество гостей и комнат
-    cardElementTemplate.querySelector('.popup__text--time').textContent = 'Заезд после ' + extractArrayElements(CHECKIN, data[0].offer.checkin) + ', выезд до ' + extractArrayElements(CHECKOUT, data[0].offer.checkout); // время заезда и выезда
+    cardElementTemplate.querySelector('.popup__type').textContent = TYPE[data[0].offer.type]; // тип жилья
     cardElementTemplate.querySelector('.popup__features').textContent = data[0].offer.features; // удобства
     cardElementTemplate.querySelector('.popup__description').textContent = data[0].offer.description; // описание
-    for (var l = 0; l < data[0].offer.photos.length; l++) {
-      console.log(data[0].offer.photos[l]);
+    cardElementTemplate.querySelector('.popup__text--address').textContent = data[0].offer.address; // адрес
+    cardElementTemplate.querySelector('.popup__text--price').textContent = data[0].offer.price + '₽/ночь'; // цена
+    cardElementTemplate.querySelector('.popup__text--capacity').textContent = data[0].offer.rooms + ' комнаты для ' + data[0].offer.guests + ' гостей'; // количество гостей и комнат
+    cardElementTemplate.querySelector('.popup__text--time').textContent = 'Заезд после ' + CHECKIN[data[0].offer.checkin] + ', выезд до ' + CHECKOUT[data[0].offer.checkout]; // время заезда и выезда
+
+    if (data[0].offer.photos.length !== 0) {
+      cardElementTemplate.querySelector('.popup__photo').src = data[0].offer.photos[0]; // фотки
+    } else {
+      cardElementTemplate.querySelector('.popup__photos').style.display = 'none';
     }
-    // cardElementTemplate.querySelector('.popup__photo').src = data[0].offer.photos; // фотки
+
     return cardElementTemplate;
   };
 
