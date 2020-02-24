@@ -21,7 +21,7 @@ function getRandomInt(min, max) {
 var createRandArrayMany = function (array) {
   var numberArray = getRandomInt(0, array.length); // выбор значений из массива от 0 до числа длины массива
   var newArray = []; // новый массив
-  for (var i = 0; i < numberArray; i++) { // выбираем столько элементов, сколько отоболось рендомно
+  for (var i = 0; i < numberArray; i++) { // выбираем столько элементов, сколько отобралось рендомно
     newArray.push(array[i]); // складываем элементы в массив newArray
   }
   return newArray; // возвращаем наполненный массив newArray
@@ -42,16 +42,16 @@ var createDataMoke = function () {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
       },
       offer: {
-        title: 'Заголовок ' + i,
+        title: 'Заголовок элемента ' + i,
         address: '600, 350',
-        price: 0,
+        price: 1000,
         type: createRandArrayOne(TYPE),
         rooms: 4,
         guests: 10,
         checkin: createRandArrayOne(CHECKIN),
         checkout: createRandArrayOne(CHECKOUT),
         features: createRandArrayMany(FEATURES),
-        description: 'Строка с описанием' + i,
+        description: 'Строка с описанием элемена ' + i,
         photos: createRandArrayMany(PHOTOS)
       },
       location: {
@@ -66,7 +66,7 @@ var createDataMoke = function () {
 var pinElement = document.querySelector('.map__pins'); // находим класс в котором будут выводится точки на карте
 var pinTemplate = document.querySelector('#pin').content; // находим id шаблона в верстке и получаем его содержимое
 
-var fragment = document.createDocumentFragment(); // создаем пустой фрагмент
+var fragment = document.createDocumentFragment(); // создаем пустой фрагмент для вывода
 
 var renderAvatars = function (data) {
   for (var i = 0; i < data.length; i++) {
@@ -87,3 +87,47 @@ var renderAvatars = function (data) {
 };
 
 renderAvatars(createDataMoke());
+
+var cardTemplate = document.querySelector('#card').content; // находим id шаблона объявления в верстке и получаем его содержимое
+
+var renderCards = function (data) {
+  // for (var i = 0; i < data.length; i++) { // вывод всех объявлений, пусть тут будет
+  var renderCard = function () {
+    var cardElementTemplate = cardTemplate.querySelector('article').cloneNode(true); // клонируем весь шаблон article
+    var cardAvatarImg = cardElementTemplate.querySelector('.popup__avatar');
+    var cardTitle = cardElementTemplate.querySelector('.popup__title');
+    var cardType = cardElementTemplate.querySelector('.popup__type');
+    var cardFeatures = cardElementTemplate.querySelector('.popup__features');
+    var cardDescription = cardElementTemplate.querySelector('.popup__description');
+    var cardAddress = cardElementTemplate.querySelector('.popup__text--address');
+    var cardPrice = cardElementTemplate.querySelector('.popup__text--price');
+    var cardCapacity = cardElementTemplate.querySelector('.popup__text--capacity');
+    var cardАrrivalTime = cardElementTemplate.querySelector('.popup__text--time');
+    var cardPhotos = cardElementTemplate.querySelector('.popup__photos');
+    var cardPhotoImg = cardElementTemplate.querySelector('.popup__photo');
+    // заполняем объявление
+    cardAvatarImg.src = data[0].author.avatar; // аватарка
+    cardTitle.textContent = data[0].offer.title; // заголовок
+    cardType.textContent = TYPE[data[0].offer.type]; // тип жилья
+    cardFeatures.textContent = data[0].offer.features; // удобства
+    cardDescription.textContent = data[0].offer.description; // описание
+    cardAddress.textContent = data[0].offer.address; // адрес
+    cardPrice.textContent = data[0].offer.price + '₽/ночь'; // цена
+    cardCapacity.textContent = data[0].offer.rooms + ' комнаты для ' + data[0].offer.guests + ' гостей'; // количество гостей и комнат
+    cardАrrivalTime.textContent = 'Заезд после ' + CHECKIN[data[0].offer.checkin] + ', выезд до ' + CHECKOUT[data[0].offer.checkout]; // время заезда и выезда
+
+    if (data[0].offer.photos.length !== 0) {
+      cardPhotoImg.src = data[0].offer.photos[0]; // фотки
+    } else {
+      cardPhotos.style.display = 'none';
+    }
+
+    return cardElementTemplate;
+  };
+
+  fragment.appendChild(renderCard(data[0])); // добавляем в фрагмент объявления
+  var addBefore = MAPS.querySelector('.map__filters-container'); // находим элемент, перед которым надо вывести объявления
+  MAPS.insertBefore(fragment, addBefore); // выводим фрагменты в верстку
+  // }
+};
+renderCards(createDataMoke());
