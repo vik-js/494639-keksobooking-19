@@ -5,10 +5,15 @@ var CHECKIN = ['12:00', '13:00', '14:00']; // время заезда
 var CHECKOUT = ['12:00', '13:00', '14:00']; // время выезда
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner']; // удобства
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg']; // фото жилья
+var MAPS_WIDTH = 1200; // ширина поля карты
+var MAPS_HEIGHT = 750; // высота поля карты
+var MAIN_PIN_WIDTH = 62; // ширина основной метки
+var MAIN_PIN_HEIGHT = 84; // высота основной метки
+var ENTER_KEY = 'Enter';
 
 // Получаем элементы с классом map
 var MAPS = document.querySelector('.map'); // находим класс map
-MAPS.classList.remove('map--faded'); // удаляем у map класс map--faded
+// MAPS.classList.remove('map--faded'); // удаляем у map класс map--faded
 
 // функция выбора рендомного числа
 function getRandomInt(min, max) {
@@ -63,7 +68,7 @@ var createDataMoke = function () {
   return data;
 };
 
-var pinElement = document.querySelector('.map__pins'); // находим класс в котором будут выводится точки на карте
+var pinElement = MAPS.querySelector('.map__pins'); // находим класс в котором будут выводится точки на карте
 var pinTemplate = document.querySelector('#pin').content; // находим id шаблона в верстке и получаем его содержимое
 
 var fragment = document.createDocumentFragment(); // создаем пустой фрагмент для вывода
@@ -72,10 +77,10 @@ var renderAvatars = function (data) {
   for (var i = 0; i < data.length; i++) {
     // заполняем аватарку
     var renderAvatar = function () {
-      var iconWidth = 50;
+      var iconWhidth = 50;
       var iconHeight = 70;
       var pinBtnTemplate = pinTemplate.querySelector('button').cloneNode(true); // клонируем весь шаблон button
-      pinTemplate.querySelector('.map__pin').style = 'left: ' + (data[i].location.x + iconWidth / 2) + 'px; top: ' + (data[i].location.y + iconHeight) + 'px;'; // в шаблоне button находим атрибут style и задаем новое значение
+      pinTemplate.querySelector('.map__pin').style = 'left: ' + (data[i].location.x + iconWhidth / 2) + 'px; top: ' + (data[i].location.y + iconHeight) + 'px;'; // в шаблоне button находим атрибут style и задаем новое значение
       pinBtnTemplate.querySelector('img').src = data[i].author.avatar; // находим изображение аватарки и задаем значение атрибуту src
       pinBtnTemplate.querySelector('img').alt = data[i].offer.title; // находим изображения аватарки и задаем значение атрибуду alt
       return pinBtnTemplate;
@@ -90,44 +95,78 @@ renderAvatars(createDataMoke());
 
 var cardTemplate = document.querySelector('#card').content; // находим id шаблона объявления в верстке и получаем его содержимое
 
-var renderCards = function (data) {
-  // for (var i = 0; i < data.length; i++) { // вывод всех объявлений, пусть тут будет
-  var renderCard = function () {
-    var cardElementTemplate = cardTemplate.querySelector('article').cloneNode(true); // клонируем весь шаблон article
-    var cardAvatarImg = cardElementTemplate.querySelector('.popup__avatar');
-    var cardTitle = cardElementTemplate.querySelector('.popup__title');
-    var cardType = cardElementTemplate.querySelector('.popup__type');
-    var cardFeatures = cardElementTemplate.querySelector('.popup__features');
-    var cardDescription = cardElementTemplate.querySelector('.popup__description');
-    var cardAddress = cardElementTemplate.querySelector('.popup__text--address');
-    var cardPrice = cardElementTemplate.querySelector('.popup__text--price');
-    var cardCapacity = cardElementTemplate.querySelector('.popup__text--capacity');
-    var cardАrrivalTime = cardElementTemplate.querySelector('.popup__text--time');
-    var cardPhotos = cardElementTemplate.querySelector('.popup__photos');
-    var cardPhotoImg = cardElementTemplate.querySelector('.popup__photo');
-    // заполняем объявление
-    cardAvatarImg.src = data[0].author.avatar; // аватарка
-    cardTitle.textContent = data[0].offer.title; // заголовок
-    cardType.textContent = TYPE[data[0].offer.type]; // тип жилья
-    cardFeatures.textContent = data[0].offer.features; // удобства
-    cardDescription.textContent = data[0].offer.description; // описание
-    cardAddress.textContent = data[0].offer.address; // адрес
-    cardPrice.textContent = data[0].offer.price + '₽/ночь'; // цена
-    cardCapacity.textContent = data[0].offer.rooms + ' комнаты для ' + data[0].offer.guests + ' гостей'; // количество гостей и комнат
-    cardАrrivalTime.textContent = 'Заезд после ' + CHECKIN[data[0].offer.checkin] + ', выезд до ' + CHECKOUT[data[0].offer.checkout]; // время заезда и выезда
+// var renderCards = function (data) {
+//   // for (var i = 0; i < data.length; i++) { // вывод всех объявлений, пусть тут будет
+//   var renderCard = function () {
+//     var cardElementTemplate = cardTemplate.querySelector('article').cloneNode(true); // клонируем весь шаблон article
+//     var cardAvatarImg = cardElementTemplate.querySelector('.popup__avatar');
+//     var cardTitle = cardElementTemplate.querySelector('.popup__title');
+//     var cardType = cardElementTemplate.querySelector('.popup__type');
+//     var cardFeatures = cardElementTemplate.querySelector('.popup__features');
+//     var cardDescription = cardElementTemplate.querySelector('.popup__description');
+//     var cardAddress = cardElementTemplate.querySelector('.popup__text--address');
+//     var cardPrice = cardElementTemplate.querySelector('.popup__text--price');
+//     var cardCapacity = cardElementTemplate.querySelector('.popup__text--capacity');
+//     var cardАrrivalTime = cardElementTemplate.querySelector('.popup__text--time');
+//     var cardPhotos = cardElementTemplate.querySelector('.popup__photos');
+//     var cardPhotoImg = cardElementTemplate.querySelector('.popup__photo');
+//     // заполняем объявление
+//     cardAvatarImg.src = data[0].author.avatar; // аватарка
+//     cardTitle.textContent = data[0].offer.title; // заголовок
+//     cardType.textContent = TYPE[data[0].offer.type]; // тип жилья
+//     cardFeatures.textContent = data[0].offer.features; // удобства
+//     cardDescription.textContent = data[0].offer.description; // описание
+//     cardAddress.textContent = data[0].offer.address; // адрес
+//     cardPrice.textContent = data[0].offer.price + '₽/ночь'; // цена
+//     cardCapacity.textContent = data[0].offer.rooms + ' комнаты для ' + data[0].offer.guests + ' гостей'; // количество гостей и комнат
+//     cardАrrivalTime.textContent = 'Заезд после ' + CHECKIN[data[0].offer.checkin] + ', выезд до ' + CHECKOUT[data[0].offer.checkout]; // время заезда и выезда
 
-    if (data[0].offer.photos.length !== 0) {
-      cardPhotoImg.src = data[0].offer.photos[0]; // фотки
-    } else {
-      cardPhotos.style.display = 'none';
-    }
+//     if (data[0].offer.photos.length !== 0) {
+//       cardPhotoImg.src = data[0].offer.photos[0]; // фотки
+//     } else {
+//       cardPhotos.style.display = 'none';
+//     }
 
-    return cardElementTemplate;
-  };
+//     return cardElementTemplate;
+//   };
 
-  fragment.appendChild(renderCard(data[0])); // добавляем в фрагмент объявления
-  var addBefore = MAPS.querySelector('.map__filters-container'); // находим элемент, перед которым надо вывести объявления
-  MAPS.insertBefore(fragment, addBefore); // выводим фрагменты в верстку
-  // }
+//   fragment.appendChild(renderCard(data[0])); // добавляем в фрагмент объявления
+//   var addBefore = MAPS.querySelector('.map__filters-container'); // находим элемент, перед которым надо вывести объявления
+//   MAPS.insertBefore(fragment, addBefore); // выводим фрагменты в верстку
+//   // }
+// };
+// renderCards(createDataMoke());
+
+var mainPin = MAPS.querySelector('.map__pin--main'); // находим метку с классом map__pin--main
+var noticeForm = document.querySelector('.ad-form'); // находим форму с классом ad-form
+var mainPinX = MAPS_WIDTH / 2 - MAIN_PIN_WIDTH / 2; // находим положение основной метки по горизонтали с учетом ее ширины
+var mainPinY = MAPS_HEIGHT / 2; // находим положение основной метки по вертикали
+
+noticeForm.querySelector('#address').value = mainPinX + ', ' + mainPinY; // находим поле с адресом и задаем ему значение положения основной метки после загрузки страницы
+
+// активация карты
+var mapActivation = function () {
+  MAPS.classList.remove('map--faded'); // удаляем у map класс map--faded
+  noticeForm.classList.remove('ad-form--disabled'); // удаляем у формы класс ad-form--disabled
 };
-renderCards(createDataMoke());
+// активация карты после нажатия клавиши Enter
+mainPin.addEventListener('keydown', function (evt) {
+  if (evt.key === ENTER_KEY) {
+    mapActivation();
+  }
+});
+// активация карты после нажатия левой кнопки мыши и запись в поле адреса координат клика
+mainPin.addEventListener('mousedown', function (evt) {
+  if (evt.which === 1) {
+    mapActivation();
+    noticeForm.querySelector('#address').value = (evt.x - (MAIN_PIN_WIDTH / 2)) + ', ' + (evt.y + MAIN_PIN_HEIGHT);
+  }
+});
+
+var capacityNum = noticeForm.querySelector('#capacity'); // количество гостей
+var roomsNum = noticeForm.querySelector('#room_number'); // количество комнат
+// валидация поля с количеством гостей и комнат
+for (var i = 0; i < capacityNum.length; i++) {
+  console.log(capacityNum[i]);
+}
+// var findInput = findForm.querySelector('.ad-form__element').setAttribute('disabled');
