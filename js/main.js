@@ -171,8 +171,8 @@ formAddressInput.setAttribute('readonly', 'readonly');
 var mapActivation = function () {
   MAPS.classList.remove('map--faded'); // удаляем у map класс map--faded
   noticeForm.classList.remove('ad-form--disabled'); // удаляем у формы класс ad-form--disabled
-  for (var i = 0; i < formAllFieldset.length; i++) {
-    formAllFieldset[i].removeAttribute('disabled');
+  for (var k = 0; k < formAllFieldset.length; k++) {
+    formAllFieldset[k].removeAttribute('disabled');
   }
 };
 // активация карты после нажатия клавиши Enter
@@ -195,46 +195,26 @@ formTitleInput.setAttribute('minlength', MIN_TITLE_LENGTH);
 formTitleInput.setAttribute('maxlength', MAX_TITLE_LENGTH);
 formPriceInput.setAttribute('required', 'required');
 formPriceInput.setAttribute('type', 'number');
+formPriceInput.setAttribute('min', MIN_PRICE_FLAT); // устанавливаем минимальное значение для квартиры
 formPriceInput.setAttribute('max', MAX_PRICE);
 formPhotoInput.setAttribute('accept', 'image/png, image/jpeg');
 
-// formTitleInput.addEventListener('input', function (evt) {
-//   var target = evt.target;
-//   if (target.value.length < MIN_TITLE_LENGTH) {
-//     target.setCustomValidity('22-Заголовок должен состоять минимум из ' + MIN_TITLE_LENGTH + ' символов');
-//   } else if (target.value.length > MAX_TITLE_LENGTH) {
-//     target.setCustomValidity('22-Заголовок не должен превышать ' + MAX_TITLE_LENGTH + ' символов');
-//   } else if (target.value.length || !evt.target) {
-//     target.setCustomValidity('22-Обязательно поле');
-//   } else {
-//     target.setCustomValidity('');
-//   }
-// });
-
-function showError() {
-  if (formTitleInput.validity.tooShort) {
-    formTitleInput.setCustomValidity('Заголовок должен состоять минимум из ' + MIN_TITLE_LENGTH + ' символов');
-  } else if (formTitleInput.validity.tooLong) {
-    formTitleInput.setCustomValidity('Заголовок не должен превышать ' + MAX_TITLE_LENGTH + ' символов');
-  } else if (formTitleInput.validity.valueMissing) {
-    formTitleInput.setCustomValidity('Обязательно поле');
-  } else {
-    formTitleInput.setCustomValidity('');
-  }
-}
-
 // выбор типа жилья
 formTypeSelect.addEventListener('change', function () {
-  for (var i = 0; i < formTypeSelect.length; i++) {
-    if (formTypeSelect.options[i].selected == true) {
-      if (formTypeSelect.options[i].value == 'bungalo') {
+  for (var j = 0; j < formTypeSelect.length; j++) {
+    if (formTypeSelect.options[j].selected === true) {
+      if (formTypeSelect.options[j].value === 'bungalo') {
         formPriceInput.placeholder = MIN_PRICE_BUNGALO;
-      } else if (formTypeSelect.options[i].value == 'flat') {
+        formPriceInput.setAttribute('min', MIN_PRICE_BUNGALO);
+      } else if (formTypeSelect.options[j].value === 'flat') {
         formPriceInput.placeholder = MIN_PRICE_FLAT;
-      } else if (formTypeSelect.options[i].value == 'house') {
+        formPriceInput.setAttribute('min', MIN_PRICE_FLAT);
+      } else if (formTypeSelect.options[j].value === 'house') {
         formPriceInput.placeholder = MIN_PRICE_HOUSE;
-      } else if (formTypeSelect.options[i].value == 'palace') {
+        formPriceInput.setAttribute('min', MIN_PRICE_HOUSE);
+      } else if (formTypeSelect.options[j].value === 'palace') {
         formPriceInput.placeholder = MIN_PRICE_PALACE;
+        formPriceInput.setAttribute('min', MIN_PRICE_PALACE);
       }
     }
   }
@@ -248,20 +228,61 @@ formTimeInSelect.addEventListener('change', function () {
 formTimeOutSelect.addEventListener('change', function () {
   formTimeInSelect.value = formTimeOutSelect.options[formTimeOutSelect.selectedIndex].value;
 });
-
+// выбор количества комнат/мест
 formRoomSelect.addEventListener('change', function () {
-  if (formRoomSelect.options[formRoomSelect.selectedIndex].value == 100) {
+  if (formRoomSelect.options[formRoomSelect.selectedIndex].value === 100) {
     formCapacitySelect.value = 0;
   } else {
     formCapacitySelect.value = formRoomSelect.options[formRoomSelect.selectedIndex].value;
   }
 });
 
+var selectTypeObject = {
+  '1 комната': ['для 1 гостя'],
+  '2 комнаты': ['для 1 гостя', 'для 2 гостей'],
+  '3 комнаты': ['для 1 гостя', 'для 2 гостей', 'для 3 гостей'],
+  '100 комнат': ['не для гостей']
+};
+
+// проверяем, есть ли свойство в объекте
+function includeinObject(arr, obj) {
+  return (arr.indexOf(obj) !== -1);
+}
+
+// ошибки при отправке формы
+function showError() {
+  if (formTitleInput.validity.tooShort) {
+    formTitleInput.setCustomValidity('Заголовок должен состоять минимум из ' + MIN_TITLE_LENGTH + ' символов');
+  } else if (formTitleInput.validity.tooLong) {
+    formTitleInput.setCustomValidity('Заголовок не должен превышать ' + MAX_TITLE_LENGTH + ' символов');
+  } else if (formTitleInput.validity.valueMissing) {
+    formTitleInput.setCustomValidity('Обязательно поле');
+  } else {
+    formTitleInput.setCustomValidity('');
+  }
+
+  var roomSelectOptionValue = formRoomSelect.options[formRoomSelect.selectedIndex].text; // значение выбранного количесва комнат
+  var capacitySelectOptionValue = formCapacitySelect.options[formCapacitySelect.selectedIndex].text; // значение выбранного количесва мест
+
+  if (includeinObject(selectTypeObject[roomSelectOptionValue], capacitySelectOptionValue) === false) {
+    if (roomSelectOptionValue === '1 комната') {
+      formCapacitySelect.setCustomValidity('1 комната только для 1 гостя');
+    } else if (roomSelectOptionValue === '2 комнаты') {
+      formCapacitySelect.setCustomValidity('2 комнаты только для 1 или 2 гостей');
+    } else if (roomSelectOptionValue === '3 комнаты') {
+      formCapacitySelect.setCustomValidity('3 комнаты только для 1, 2 или 3 гостей');
+    } else if (roomSelectOptionValue === '100 комнат') {
+      formCapacitySelect.setCustomValidity('Не для гостей');
+    }
+  } else {
+    formCapacitySelect.setCustomValidity('');
+  }
+}
+
 var formSubmitBtn = noticeForm.querySelector('.ad-form__submit'); // кнопка "Опубликовать"
 
 // Добавляем обработчик клика на кнопку отправки формы
-formSubmitBtn.addEventListener('click', function(evt) {
+formSubmitBtn.addEventListener('click', function () {
   // evt.preventDefault();
   showError();
 });
-
