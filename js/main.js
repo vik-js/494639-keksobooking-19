@@ -230,7 +230,7 @@ formTimeOutSelect.addEventListener('change', function () {
 });
 // выбор количества комнат/мест
 formRoomSelect.addEventListener('change', function () {
-  if (formRoomSelect.options[formRoomSelect.selectedIndex].value === 100) {
+  if (formRoomSelect.options[formRoomSelect.selectedIndex].value == 100) {
     formCapacitySelect.value = 0;
   } else {
     formCapacitySelect.value = formRoomSelect.options[formRoomSelect.selectedIndex].value;
