@@ -144,7 +144,7 @@ var mainPinY = MAPS_HEIGHT / 2; // находим положение основ�
 var formAvatarInput = noticeForm.querySelector('#avatar'); // input аватарка
 var formTitleInput = noticeForm.querySelector('#title'); // input заголовка объявления
 var formAddressInput = noticeForm.querySelector('#address'); // input адреса объявления
-var formTypeSelect = noticeForm.querySelector('#type'); // input тип жилья объявления
+var formTypeSelect = noticeForm.querySelector('#type'); // select тип жилья объявления
 var formPriceInput = noticeForm.querySelector('#price'); // input цена за ночь
 var formTimeInSelect = noticeForm.querySelector('#timein'); // select время заезда
 var formTimeOutSelect = noticeForm.querySelector('#timeout'); // select время выезда
@@ -199,23 +199,20 @@ formPriceInput.setAttribute('min', MIN_PRICE_FLAT); // устанавливае�
 formPriceInput.setAttribute('max', MAX_PRICE);
 formPhotoInput.setAttribute('accept', 'image/png, image/jpeg');
 
+var inputMinPriceObject = {
+  'bungalo': MIN_PRICE_BUNGALO,
+  'flat': MIN_PRICE_FLAT,
+  'house': MIN_PRICE_HOUSE,
+  'palace': MIN_PRICE_PALACE
+};
+
 // выбор типа жилья
 formTypeSelect.addEventListener('change', function () {
   for (var j = 0; j < formTypeSelect.length; j++) {
     if (formTypeSelect.options[j].selected === true) {
-      if (formTypeSelect.options[j].value === 'bungalo') {
-        formPriceInput.placeholder = MIN_PRICE_BUNGALO;
-        formPriceInput.setAttribute('min', MIN_PRICE_BUNGALO);
-      } else if (formTypeSelect.options[j].value === 'flat') {
-        formPriceInput.placeholder = MIN_PRICE_FLAT;
-        formPriceInput.setAttribute('min', MIN_PRICE_FLAT);
-      } else if (formTypeSelect.options[j].value === 'house') {
-        formPriceInput.placeholder = MIN_PRICE_HOUSE;
-        formPriceInput.setAttribute('min', MIN_PRICE_HOUSE);
-      } else if (formTypeSelect.options[j].value === 'palace') {
-        formPriceInput.placeholder = MIN_PRICE_PALACE;
-        formPriceInput.setAttribute('min', MIN_PRICE_PALACE);
-      }
+      var itemTypeSelected = inputMinPriceObject[formTypeSelect.options[j].value];
+      formPriceInput.placeholder = itemTypeSelected;
+      formPriceInput.setAttribute('min', itemTypeSelected);
     }
   }
 });
@@ -230,7 +227,7 @@ formTimeOutSelect.addEventListener('change', function () {
 });
 // выбор количества комнат/мест
 formRoomSelect.addEventListener('change', function () {
-  if (formRoomSelect.options[formRoomSelect.selectedIndex].value == 100) {
+  if (formRoomSelect.options[formRoomSelect.selectedIndex].value === '100') {
     formCapacitySelect.value = 0;
   } else {
     formCapacitySelect.value = formRoomSelect.options[formRoomSelect.selectedIndex].value;
@@ -243,11 +240,6 @@ var selectTypeObject = {
   '3 комнаты': ['для 1 гостя', 'для 2 гостей', 'для 3 гостей'],
   '100 комнат': ['не для гостей']
 };
-
-// проверяем, есть ли свойство в объекте
-function includeinObject(arr, obj) {
-  return (arr.indexOf(obj) !== -1);
-}
 
 // ошибки при отправке формы
 function showError() {
@@ -262,25 +254,15 @@ function showError() {
   }
 
   var roomSelectOptionValue = formRoomSelect.options[formRoomSelect.selectedIndex].text; // значение выбранного количесва комнат
-  var capacitySelectOptionValue = formCapacitySelect.options[formCapacitySelect.selectedIndex].text; // значение выбранного количесва мест
 
-  if (includeinObject(selectTypeObject[roomSelectOptionValue], capacitySelectOptionValue) === false) {
-    if (roomSelectOptionValue === '1 комната') {
-      formCapacitySelect.setCustomValidity('1 комната только для 1 гостя');
-    } else if (roomSelectOptionValue === '2 комнаты') {
-      formCapacitySelect.setCustomValidity('2 комнаты только для 1 или 2 гостей');
-    } else if (roomSelectOptionValue === '3 комнаты') {
-      formCapacitySelect.setCustomValidity('3 комнаты только для 1, 2 или 3 гостей');
-    } else if (roomSelectOptionValue === '100 комнат') {
-      formCapacitySelect.setCustomValidity('Не для гостей');
-    }
+  if (selectTypeObject[roomSelectOptionValue]) {
+    formCapacitySelect.setCustomValidity(selectTypeObject[roomSelectOptionValue]);
   } else {
     formCapacitySelect.setCustomValidity('');
   }
 }
 
 var formSubmitBtn = noticeForm.querySelector('.ad-form__submit'); // кнопка "Опубликовать"
-
 // Добавляем обработчик клика на кнопку отправки формы
 formSubmitBtn.addEventListener('click', function () {
   // evt.preventDefault();
